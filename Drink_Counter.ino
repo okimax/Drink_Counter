@@ -12,17 +12,12 @@ int count = 0;
 int timer = 0;
 int onFlag = false;
 
+
 void setup(void) {
-  // We'll send debugging information via the Serial monitor
   Serial.begin(9600);
   Serial.println("-- setup() --");
   
-  ////////////////////////////////////////
-  // AquesTalk pico LSIの応答チェック
-  // LSIが応答するか最初にチェックしておくと良い
-  ////////////////////////////////////////
   if( !atp.IsActive() ){
-    // 音声合成LSIから応答が得られない。配線等をチェック
     Serial.println("No response.");
   }
   else {
@@ -33,7 +28,7 @@ void setup(void) {
 
 void loop(void) {
   fsrReading = analogRead(fsrPin);
- 
+  
   if (fsrReading > fsrBufferUp && !onFlag) {
     if(timer == 2) {
       count = setCount(count);
@@ -54,7 +49,7 @@ void loop(void) {
       }
     }
   }
-
+  
   if (fsrReading == 0) {
     onFlag = false;
     timer = 0;
@@ -73,15 +68,19 @@ void loop(void) {
   Serial.print(fsrBufferDw);
   Serial.print("\t");
   Serial.println(count);
-    
+  
+//  count = setCount(count);
+//  callCheer(count);
   delay(1000);
 }
 
+
+//カウントされたら、読み上げる。
 int setCount(int cnt) {
   String str;
   cnt++;
   
-  str = "<NUMK VAL=" + String(cnt) + ">hai/me'de_su.";
+  str = "<NUMK VAL=" + String(cnt) + "COUNTER=ha'i MODE=GcH>mede'_su.";
   atp.SyntheS(str);
 
   while(atp.IsBusy());
@@ -89,17 +88,19 @@ int setCount(int cnt) {
   return cnt;
 }
 
+
+//コースターに置いたら応援する。
 void callCheer(int cnt) {
   String str;
   
   if (cnt == 1) {
-    str = "mada'mada-";
+    str = "ma'damada/-'";
   }
   else if (cnt == 2) {
     str = "mo'tto-";
   }
   else {
-    str = "otsukare/samade_su.";
+    str = "o_tsukaresamade'_shita.";
   }
   atp.SyntheS(str);
 
